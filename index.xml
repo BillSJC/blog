@@ -6,9 +6,24 @@
     <description>Recent content on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
+    <lastBuildDate>Mon, 22 Apr 2019 09:45:50 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.debug.online/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Golang中的interface{}</title>
+      <link>https://blog.debug.online/posts/interface/</link>
+      <pubDate>Mon, 22 Apr 2019 09:45:50 +0800</pubDate>
+      
+      <guid>https://blog.debug.online/posts/interface/</guid>
+      <description>万能的interface{} 写过golang的童鞋们应该都知道这个叫做interface{}的东西，他的功能可以说是有点强大的，比如它可以被任意类型(包括其他interface)赋值
+//string str := &amp;#34;something to say&amp;#34; var i interface{} i = str fmt.Println(str) //something to say fmt.Println(i) //something to say  //num num := 10085 i = num fmt.Println(num) //10086 fmt.Println(i) //10086 是不是很像PHP,Pyhton中的弱类型？在某种意义上来说,如果你将任何东西赋值给了interface,并且不需要做任何层面的数据处理(不需要里边的对某一项数据做取值、赋值操作)的话，确实可以当做golang中的弱类型来使用，直接用于Print和输出JSON等操作
+当然，试图从interface中取值并不是一个很麻烦的操作，这将在后面将reflect包时提及
+interface{}的实质 所以，强类型中的Golang究竟是如何实现&amp;rdquo;弱类型&amp;rdquo;的呢
+首先我们去官方文档看下interface{}的定义
+Interface types An interface type specifies a method set called its interface. A variable of interface type can store a value of any type with a method set that is any superset of the interface.</description>
+    </item>
     
     <item>
       <title>About Hugo</title>
