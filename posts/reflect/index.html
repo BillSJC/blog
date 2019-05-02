@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Bill Shen">
+    <meta name="description" content="Bill Shen Doe&#39;s personal website">
+    <meta name="keywords" content="blog,developer,personal">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="golang中的reflect 反射包(上)"/>
+<meta name="twitter:description" content="反射包"/>
+
+    <meta property="og:title" content="golang中的reflect 反射包(上)" />
+<meta property="og:description" content="反射包" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.debug.online/posts/reflect/" />
+<meta property="article:published_time" content="2019-04-22T21:05:40&#43;08:00"/>
+<meta property="article:modified_time" content="2019-04-22T21:05:40&#43;08:00"/>
+
+
+
+    
+      <base href="https://blog.debug.online/posts/reflect/">
+    
+    <title>
+  golang中的reflect 反射包(上) · SJC
+</title>
+
+    
+      <link rel="canonical" href="https://blog.debug.online/posts/reflect/">
+    
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CMerriweather:300,700%7CSource+Code+Pro:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" integrity="sha256-oSrCnRYXvHG31SBifqP2PM1uje7SJUyX0nTwO2RJV54=" crossorigin="anonymous" />
+
+    
+      
+      
+      <link rel="stylesheet" href="https://blog.debug.online/css/coder.min.28d751104f30c16da1aa1bb04015cbe662cacfe0d1b01af4f2240ad58580069c.css" integrity="sha256-KNdREE8wwW2hqhuwQBXL5mLKz&#43;DRsBr08iQK1YWABpw=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-16x16.png" sizes="16x16">
+
+    <meta name="generator" content="Hugo 0.55.3" />
+  </head>
+
+  <body class=" ">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://blog.debug.online">
+      SJC
+    </a>
+    <input type="checkbox" id="menu-toggle" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="fas fa-bars"></i></label>
+    <ul class="navigation-list">
+      
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/about/">About</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/posts/">Blog</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/projects/">Projects</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/contact/">Contact me</a>
+          </li>
+        
+      
+      
+    </ul>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">golang中的reflect 反射包(上)</h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fas fa-calendar"></i>
+              <time datetime='2019-04-22T21:05:40&#43;08:00'>
+                April 22, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fas fa-clock"></i>
+              
+            </span>
+          </div>
+          <div class="categories">
+  <i class="fas fa-folder"></i>
+    <a href="https://blog.debug.online/categories/development/">Development</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/categories/golang/">golang</a></div>
+
+          <div class="tags">
+  <i class="fas fa-tag"></i>
+    <a href="https://blog.debug.online/tags/go/">go</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/golang/">golang</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/hugo/">hugo</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/development/">development</a></div>
+
+        </div>
+      </header>
+
+      <div>
+        
+
+<h2 id="reflect-反射">reflect 反射</h2>
+
+<h3 id="什么是反射">什么是反射</h3>
+
+<p>对于反射，最简单的理解就是</p>
+
+<p>我给你一个变量<code>a:=1</code>，你告诉我这个a变量是个int，值为1</p>
+
+<p>尤其是对于<code>interface{}</code>接口类型，由于丢失了其真正的显式类型，需要通过反射来获取类型</p>
+
+<h3 id="快速上手">快速上手</h3>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">通过此代码<span style="color:#f00">，</span>你可以快速的使用到类型判别的功能
+
+<span style="color:#fff;font-weight:bold">func</span> getType(input <span style="color:#fff;font-weight:bold">interface</span>{})(realType <span style="color:#fff;font-weight:bold">string</span>){
+    t := reflect.TypeOf(input)
+    <span style="color:#fff;font-weight:bold">return</span> t.String()
+}
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+    <span style="color:#fff;font-weight:bold">var</span> a <span style="color:#fff;font-weight:bold">interface</span>{}
+    a = <span style="color:#ff0;font-weight:bold">1</span>
+    realType := getType(a)
+    fmt.Println(realType)  <span style="color:#007f7f">//int
+</span><span style="color:#007f7f"></span>}</code></pre></div>
+<p>如上所示，我们进行了很简单的类型判别，申明了一个空接口类型的变量a，并将一个整数1赋值给他，此时编译器并不能得知他的真正类型</p>
+
+<p>通过编写方法<code>getType()</code>，调用了反射包的<code>TypeOf</code>方法，我们可以获得一个<code>reflect.Type</code>类型的对象，此对象即为承载了目标变量类型的结构体</p>
+
+<p>通过<code>Type.String()</code>方法，将此结构体的类型转换为字符串<code>&quot;int&quot;</code>赋值给一个字符串变量，于是此变量就可以被用于各种后续操作</p>
+
+<h3 id="type-kind和value">Type，Kind和Value</h3>
+
+<p>golang的反射包总共有三大元素:<code>Type</code>，<code>Kind</code>和<code>Value</code></p>
+
+<p>我们可以将一个变量拆分为两个域:类型(Type)和值(Value)</p>
+
+<p>Type是变量的类型域(内存中定义此变量类型的区域)，如<code>string</code>,<code>int64</code>等等</p>
+
+<p>而Value则是实际承载的数据域(即内存上记录这块数据的区域)，如<code>&quot;hello&quot;</code>，<code>1</code>,甚至<code>[1,2,3,5]</code>等</p>
+
+<h4 id="type-和-kind">Type 和 Kind</h4>
+
+<p>顾名思义，<code>Type</code>和<code>Kind</code>都是&rdquo;类型&rdquo;的意思，那这两者有什么区别呢</p>
+
+<p>官方文档定义如下</p>
+
+<p>Kind:</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//A Kind represents the specific kind of type that a Type represents. The zero Kind is not a valid kind.
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> Kind <span style="color:#fff;font-weight:bold">uint</span>
+
+<span style="color:#fff;font-weight:bold">const</span> (
+    Invalid Kind = <span style="color:#fff;font-weight:bold">iota</span>
+    Bool
+    Int
+    Int8
+    ...
+    String
+    Struct
+    UnsafePointer
+)</code></pre></div>
+<p>Type:</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">type</span> Type <span style="color:#fff;font-weight:bold">interface</span> {
+    ...
+}</code></pre></div>
+<p>由此可见，<code>Kind</code>其实是一组常量构成的，对应了golang中的各个基本类型</p>
+
+<p>而<code>Type</code>则是一个接口，包含了数据各种操作</p>
+
+<p>但是，<code>Type</code>和<code>Kind</code>都有<code>String()</code>方法，都可以输出类型，那有什么区别呢</p>
+
+<p>请看以下示例代码</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">type</span> s <span style="color:#fff;font-weight:bold">struct</span> {
+    Name <span style="color:#fff;font-weight:bold">string</span>
+}
+
+<span style="color:#fff;font-weight:bold">var</span> s1 s
+<span style="color:#fff;font-weight:bold">var</span> i1 <span style="color:#fff;font-weight:bold">int</span>
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+    i1 = <span style="color:#ff0;font-weight:bold">1</span>      <span style="color:#007f7f">//赋值
+</span><span style="color:#007f7f"></span>    s1 = s{}    <span style="color:#007f7f">//赋值
+</span><span style="color:#007f7f"></span>
+    fmt.Println(reflect.TypeOf(i1).String())    <span style="color:#007f7f">//int
+</span><span style="color:#007f7f"></span>    fmt.Println(reflect.KindOf(i1).String())    <span style="color:#007f7f">//int
+</span><span style="color:#007f7f"></span>
+    fmt.Println(reflect.TypeOf(s1).String())    <span style="color:#007f7f">//s
+</span><span style="color:#007f7f"></span>    fmt.Println(reflect.KindOf(s1).String())    <span style="color:#007f7f">//struct
+</span><span style="color:#007f7f"></span>}</code></pre></div>
+<p>我们发现，对于基本类型比如int,Type和Kind输出是一样的<code>int</code></p>
+
+<p>但是对于我们自己定义的s类结构体，Kind输出的是其自定义类型<code>s</code>，而Kind则会输出<code>struct</code></p>
+
+<p>通过查阅官方文档我们会发现，<code>Kind.String()</code>方法只是返回的上文中提到的<code>const</code>中的类型</p>
+
+<p>也就是说，<code>Kind</code>对于你定义的类型，只会返回其真正的<strong>基本类型</strong></p>
+
+<p>所以，对于基本类型变量，<code>Kind</code>和<code>Type</code>的输出并无差异</p>
+
+<p>但是对于自定义类型，比如<code>type student struct</code>这样的，学生结构体，<code>Type</code>会返回其类型<code>student</code>,而<code>Kind</code>则会返回其基本类型<code>struct</code></p>
+
+<p>除此之外，<code>Kind</code>只是一个常量，对应了基本类型，而<code>Type</code>则包括了所有对类型进行拆解的库</p>
+
+<h3 id="使用type构建变量">使用Type构建变量</h3>
+
+<p>通过Type所携带的方法，你可以不用声明类型即可构建自己的结构体、切片、管道、函数等</p>
+
+<p>Type方法定义总览(By godoc)</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-doc" data-lang="doc">type Type
+func ArrayOf(count int, elem Type) Type
+func ChanOf(dir ChanDir, t Type) Type
+func FuncOf(in, out []Type, variadic bool) Type
+func MapOf(key, elem Type) Type
+func PtrTo(t Type) Type
+func SliceOf(t Type) Type
+func StructOf(fields []StructField) Type
+func TypeOf(i interface{}) Type</code></pre></div>
+<h4 id="使用type构建结构体">使用Type构建结构体</h4>
+
+<p>我们直接使用godoc的例子来演示下空手捏结构体</p>
+
+<p>首先贴出完整代码</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//构建数据类型
+</span><span style="color:#007f7f"></span>typ := reflect.StructOf([]reflect.StructField{
+    {
+        Name: <span style="color:#0ff;font-weight:bold">&#34;Height&#34;</span>,
+        Type: reflect.TypeOf(<span style="color:#fff;font-weight:bold">float64</span>(<span style="color:#ff0;font-weight:bold">0</span>)),
+        Tag:  <span style="color:#0ff;font-weight:bold">`json:&#34;height&#34;`</span>,
+    },
+    {
+        Name: <span style="color:#0ff;font-weight:bold">&#34;Age&#34;</span>,
+        Type: reflect.TypeOf(<span style="color:#fff;font-weight:bold">int</span>(<span style="color:#ff0;font-weight:bold">0</span>)),
+        Tag:  <span style="color:#0ff;font-weight:bold">`json:&#34;age&#34;`</span>,
+    },
+})
+
+<span style="color:#007f7f">//根据数据类型构建变量
+</span><span style="color:#007f7f"></span>v := reflect.New(typ).Elem()
+v.Field(<span style="color:#ff0;font-weight:bold">0</span>).SetFloat(<span style="color:#ff0;font-weight:bold">0.4</span>)
+v.Field(<span style="color:#ff0;font-weight:bold">1</span>).SetInt(<span style="color:#ff0;font-weight:bold">2</span>)
+<span style="color:#007f7f">//转换为interface
+</span><span style="color:#007f7f"></span>s := v.Addr().Interface()
+
+<span style="color:#007f7f">//转换为json
+</span><span style="color:#007f7f"></span>w := <span style="color:#fff;font-weight:bold">new</span>(bytes.Buffer)
+<span style="color:#fff;font-weight:bold">if</span> err := json.NewEncoder(w).Encode(s); err != <span style="color:#fff;font-weight:bold">nil</span> {
+    <span style="color:#fff;font-weight:bold">panic</span>(err)
+}
+
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;value: %+v\n&#34;</span>, s)
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;json:  %s&#34;</span>, w.Bytes())
+
+<span style="color:#007f7f">//反向转换
+</span><span style="color:#007f7f"></span>r := bytes.NewReader([]<span style="color:#fff;font-weight:bold">byte</span>(<span style="color:#0ff;font-weight:bold">`{&#34;height&#34;:1.5,&#34;age&#34;:10}`</span>))
+<span style="color:#fff;font-weight:bold">if</span> err := json.NewDecoder(r).Decode(s); err != <span style="color:#fff;font-weight:bold">nil</span> {
+    <span style="color:#fff;font-weight:bold">panic</span>(err)
+}
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;value: %+v\n&#34;</span>, s)</code></pre></div>
+<p>然后来拆分下</p>
+
+<p>首先，是构建结构体，通过<code>StructField</code>结构体来定义数据类型</p>
+
+<p>此步骤和代码中hardcode类型一样，定义类变量名、数据类型和tag</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//正常的定义结构体成员
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> s <span style="color:#fff;font-weight:bold">struct</span> {
+<span style="color:#007f7f">//  变量名  变量类型    tag
+</span><span style="color:#007f7f"></span>    Height <span style="color:#fff;font-weight:bold">float64</span>  <span style="color:#0ff;font-weight:bold">`json:&#34;height&#34;`</span>
+    Age     <span style="color:#fff;font-weight:bold">int</span>     <span style="color:#0ff;font-weight:bold">`json:&#34;age&#34;`</span>
+}
+
+<span style="color:#007f7f">//reflect构建数据类型
+</span><span style="color:#007f7f"></span>typ := reflect.StructOf([]reflect.StructField{
+    {
+        Name: <span style="color:#0ff;font-weight:bold">&#34;Height&#34;</span>, <span style="color:#007f7f">//成员变量名
+</span><span style="color:#007f7f"></span>        Type: reflect.TypeOf(<span style="color:#fff;font-weight:bold">float64</span>(<span style="color:#ff0;font-weight:bold">0</span>)),<span style="color:#007f7f">//成员变量数据类型
+</span><span style="color:#007f7f"></span>        Tag:  <span style="color:#0ff;font-weight:bold">`json:&#34;height&#34;`</span>,  <span style="color:#007f7f">//成员变量Tag
+</span><span style="color:#007f7f"></span>    },
+    {
+        Name: <span style="color:#0ff;font-weight:bold">&#34;Age&#34;</span>,
+        Type: reflect.TypeOf(<span style="color:#fff;font-weight:bold">int</span>(<span style="color:#ff0;font-weight:bold">0</span>)),
+        Tag:  <span style="color:#0ff;font-weight:bold">`json:&#34;age&#34;`</span>,
+    },
+})</code></pre></div>
+<p>然后是实例化一个对象并赋值</p>
+
+<p>这里的<code>Field</code>的索引是按照刚才定义的时候的StructField的数组索引顺序来的</p>
+
+<p>务必对每个field使用正确的set，如对<code>int</code>成员使用<code>SetInt()</code>,否则则会因为变量类型冲突触发panic</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//建立新变量
+</span><span style="color:#007f7f"></span>v := reflect.New(typ).Elem()
+<span style="color:#007f7f">//等同于 s.Height = 0.4
+</span><span style="color:#007f7f"></span>v.Field(<span style="color:#ff0;font-weight:bold">0</span>).SetFloat(<span style="color:#ff0;font-weight:bold">0.4</span>)
+<span style="color:#007f7f">//等同于 s.Age = 2
+</span><span style="color:#007f7f"></span>v.Field(<span style="color:#ff0;font-weight:bold">1</span>).SetInt(<span style="color:#ff0;font-weight:bold">2</span>)</code></pre></div>
+<p>实例化完之后你会获得一个活在reflect包中的对象</p>
+
+<p>为啥是活在reflect中呢？</p>
+
+<p>因为你目前对他的读写操作都需要通过reflect包进行操作，甚至不能像正常结构体一样作为参数传入函数</p>
+
+<p>所以我们要将其还原为reflect和真实环境的桥梁：<code>interface{}</code></p>
+
+<p>关于接口和空接口的特性已在<a href="https://blog.debug.online/posts/interface/">golang中的interface</a>中讲过，这里不过多赘述</p>
+
+<p>使用<code>Addr()</code>方法获取此对象的地址，并使用<code>Interface{}</code>方法将其转换为空接口，完成真正的构造</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//转换为interface
+</span><span style="color:#007f7f"></span>s := v.Addr().Interface()</code></pre></div>
+<p>转换完成后，便可像一个正常结构体一样进行诸如jsonEncode等的操作了</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//转换为json
+</span><span style="color:#007f7f"></span>w := <span style="color:#fff;font-weight:bold">new</span>(bytes.Buffer)
+<span style="color:#007f7f">//使用jsonEncodeer进行编码
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">if</span> err := json.NewEncoder(w).Encode(s); err != <span style="color:#fff;font-weight:bold">nil</span> {
+    <span style="color:#fff;font-weight:bold">panic</span>(err)
+}
+
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;value: %+v\n&#34;</span>, s)
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;json:  %s&#34;</span>, w.Bytes())
+
+<span style="color:#007f7f">//反向转换
+</span><span style="color:#007f7f"></span>r := bytes.NewReader([]<span style="color:#fff;font-weight:bold">byte</span>(<span style="color:#0ff;font-weight:bold">`{&#34;height&#34;:1.5,&#34;age&#34;:10}`</span>))
+
+<span style="color:#007f7f">//使用jsonDecodeer进行解码
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">if</span> err := json.NewDecoder(r).Decode(s); err != <span style="color:#fff;font-weight:bold">nil</span> {
+    <span style="color:#fff;font-weight:bold">panic</span>(err)
+}
+fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;value: %+v\n&#34;</span>, s)</code></pre></div>
+<h4 id="构建其它类型数据">构建其它类型数据</h4>
+
+<p>构建其他数据类型也和此类似，基本上经过了声明(部分需要)和转interface{}的操作</p>
+
+<p>以下是一些手撸的构建代码</p>
+
+<p>构建map</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> (
+	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+	<span style="color:#0ff;font-weight:bold">&#34;reflect&#34;</span>
+)
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	<span style="color:#007f7f">//构造map[string]string
+</span><span style="color:#007f7f"></span>	mType := reflect.MapOf(reflect.TypeOf(<span style="color:#0ff;font-weight:bold">&#34;&#34;</span>),reflect.TypeOf(<span style="color:#ff0;font-weight:bold">1</span>))
+	<span style="color:#007f7f">//实例化对象
+</span><span style="color:#007f7f"></span>	m := reflect.New(mType)
+	<span style="color:#007f7f">//赋值
+</span><span style="color:#007f7f"></span>	m.MapIndex(reflect.ValueOf(<span style="color:#0ff;font-weight:bold">&#34;first&#34;</span>)).SetString(<span style="color:#0ff;font-weight:bold">&#34;value&#34;</span>)
+	<span style="color:#007f7f">//转换
+</span><span style="color:#007f7f"></span>	mInterface := m.Interface()
+	<span style="color:#007f7f">//test
+</span><span style="color:#007f7f"></span>	fmt.Println(mInterface)	<span style="color:#007f7f">//{first:value}
+</span><span style="color:#007f7f"></span>}</code></pre></div>
+<p>构建函数</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> (
+	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+	<span style="color:#0ff;font-weight:bold">&#34;reflect&#34;</span>
+)
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	<span style="color:#007f7f">//构造func
+</span><span style="color:#007f7f"></span>	inputType := []reflect.Type{reflect.TypeOf(<span style="color:#0ff;font-weight:bold">&#34;&#34;</span>),reflect.TypeOf(<span style="color:#ff0;font-weight:bold">1</span>)}
+	outputType := []reflect.Type{reflect.TypeOf(<span style="color:#ff0;font-weight:bold">1</span>),reflect.TypeOf(fmt.Errorf(<span style="color:#0ff;font-weight:bold">&#34;&#34;</span>))}
+
+	fType := reflect.FuncOf(inputType,outputType,<span style="color:#fff;font-weight:bold">false</span>)	<span style="color:#007f7f">//使用false拒绝末尾可变参数
+</span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//实例化对象
+</span><span style="color:#007f7f"></span>	funV := reflect.MakeFunc(fType, <span style="color:#fff;font-weight:bold">func</span>(args []reflect.Value) (results []reflect.Value) {
+		<span style="color:#007f7f">// do sth here
+</span><span style="color:#007f7f"></span>		<span style="color:#fff;font-weight:bold">var</span> data <span style="color:#fff;font-weight:bold">interface</span>{}
+		<span style="color:#fff;font-weight:bold">return</span> []reflect.Value{reflect.ValueOf(data)}
+	})
+	
+	
+	<span style="color:#007f7f">//声明函数
+</span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">var</span> fun <span style="color:#fff;font-weight:bold">func</span>(<span style="color:#fff;font-weight:bold">string</span>,<span style="color:#fff;font-weight:bold">int</span>)(<span style="color:#fff;font-weight:bold">int</span>,<span style="color:#fff;font-weight:bold">error</span>)
+	fn := reflect.ValueOf(fun).Elem()
+	<span style="color:#007f7f">//传递构造
+</span><span style="color:#007f7f"></span>	fn.Set(funV)
+	<span style="color:#007f7f">//检查函数指针
+</span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">if</span> &amp;fun == <span style="color:#fff;font-weight:bold">nil</span> {
+		<span style="color:#fff;font-weight:bold">panic</span>(fmt.Errorf(<span style="color:#0ff;font-weight:bold">&#34;nil pointer in func&#34;</span>))
+	}
+	data,err := fun(<span style="color:#0ff;font-weight:bold">&#34;string here&#34;</span>,<span style="color:#ff0;font-weight:bold">0</span>)
+	fmt.Println(data,err)
+}</code></pre></div>
+      </div>
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+      <h3>See also in Getting Started</h3>
+      <nav>
+        <ul>
+        
+        
+          
+        
+          
+            <li>
+              <a href="https://blog.debug.online/posts/interface/">Golang中的interface{}</a>
+            </li>
+          
+        
+        </ul>
+      </nav>
+    
+  
+</section>
+
+
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "emmmm" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    
+      <p>Power By Hugo</p>
+    
+     © 2019
+    
+       · 
+       <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+    
+       · 
+      [<a href="https://github.com/BillSJC"></a>]
+    
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>

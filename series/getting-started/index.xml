@@ -6,10 +6,32 @@
     <description>Recent content in Getting Started on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Mon, 22 Apr 2019 09:45:50 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 22 Apr 2019 21:05:40 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.debug.online/series/getting-started/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>golang中的reflect 反射包(上)</title>
+      <link>https://blog.debug.online/posts/reflect/</link>
+      <pubDate>Mon, 22 Apr 2019 21:05:40 +0800</pubDate>
+      
+      <guid>https://blog.debug.online/posts/reflect/</guid>
+      <description>reflect 反射 什么是反射 对于反射，最简单的理解就是
+我给你一个变量a:=1，你告诉我这个a变量是个int，值为1
+尤其是对于interface{}接口类型，由于丢失了其真正的显式类型，需要通过反射来获取类型
+快速上手 通过此代码，你可以快速的使用到类型判别的功能 func getType(input interface{})(realType string){ t := reflect.TypeOf(input) return t.String() } func main(){ var a interface{} a = 1 realType := getType(a) fmt.Println(realType) //int } 如上所示，我们进行了很简单的类型判别，申明了一个空接口类型的变量a，并将一个整数1赋值给他，此时编译器并不能得知他的真正类型
+通过编写方法getType()，调用了反射包的TypeOf方法，我们可以获得一个reflect.Type类型的对象，此对象即为承载了目标变量类型的结构体
+通过Type.String()方法，将此结构体的类型转换为字符串&amp;quot;int&amp;quot;赋值给一个字符串变量，于是此变量就可以被用于各种后续操作
+Type，Kind和Value golang的反射包总共有三大元素:Type，Kind和Value
+我们可以将一个变量拆分为两个域:类型(Type)和值(Value)
+Type是变量的类型域(内存中定义此变量类型的区域)，如string,int64等等
+而Value则是实际承载的数据域(即内存上记录这块数据的区域)，如&amp;quot;hello&amp;quot;，1,甚至[1,2,3,5]等
+Type 和 Kind 顾名思义，Type和Kind都是&amp;rdquo;类型&amp;rdquo;的意思，那这两者有什么区别呢
+官方文档定义如下
+Kind:
+//A Kind represents the specific kind of type that a Type represents. The zero Kind is not a valid kind. type Kind uint const ( Invalid Kind = iota Bool Int Int8 .</description>
+    </item>
     
     <item>
       <title>Golang中的interface{}</title>
