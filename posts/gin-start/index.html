@@ -141,7 +141,7 @@
 
 <p><code>Gin</code>是一款开源的轻量级web服务框架，基于<a href="https://github.com/julienschmidt/httprouter">http-router</a>搭建而成</p>
 
-<p>它提供了类型<code>martini</code>的API但在性能上具有巨大优势</p>
+<p>它提供了类似<code>martini</code>的API实现但同时在性能上具有巨大优势</p>
 
 <h3 id="why-gin">Why Gin</h3>
 
@@ -223,33 +223,30 @@
 <p>首先是外部的路由注册函数<code>GET()</code>，代表了注册某一个路由的GET请求，同理，存在着<code>POST()</code>,<code>DELETE()</code>,<code>PUT()</code>,<code>OPTIONS()</code>等和HTTP请求动词一一对应的方法</p>
 
 <p>当你向web服务发送了一个请求后，gin就会检测对应的路由及请求动词，若不存在对应的handler测会404，若存在，则会调用注册的闭包</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	r := gin.Default()
+	r.GET(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.POST(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.PUT(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.DELETE(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.PATCH(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.OPTIONS(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+	r.HEAD(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)</code></pre></div>
+<h4 id="闭包">闭包</h4>
 
-<p>···go</p>
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4">r := gin.Default()
-r.GET(&#34;/&#34;)
-r.POST(&#34;/&#34;)
-r.PUT(&#34;/&#34;)
-r.DELETE(&#34;/&#34;)
-r.PATCH(&#34;/&#34;)
-r.OPTIONS(&#34;/&#34;)
-r.HEAD(&#34;/&#34;)</pre></div><div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4">#### 闭包
+<p>然后来讲闭包，根据参数列表可知，每一个路由可注册0-n个闭包，具体如下</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	r := gin.Default()
 
-然后来讲闭包，根据参数列表可知，每一个路由可注册0-n个闭包，具体如下
+    <span style="color:#007f7f">//零个闭包
+</span><span style="color:#007f7f"></span>	r.GET(<span style="color:#0ff;font-weight:bold">&#34;/r1&#34;</span>)
 
-```go
-	r := gin.Default()
-
-    //零个闭包
-	r.GET(&#34;/r1&#34;)
-
-    //多个闭包
-	r.GET(&#34;/r2&#34;, func(c *gin.Context) {
+    <span style="color:#007f7f">//多个闭包
+</span><span style="color:#007f7f"></span>	r.GET(<span style="color:#0ff;font-weight:bold">&#34;/r2&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
 		
-	}, func(c *gin.Context) {
+	}, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
 
-	}, func(c *gin.Context) {
+	}, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
 
-	})</pre></div>
+	})</code></pre></div>
 <p>这些闭包会按注册顺序顺序执行，由于存在中间件(将会在以后文章提及)，整体请求处理流程如下</p>
 
 <p><code>语言级请求处理 -&gt; 框架请求处理 -&gt; 中间件请求处理 -&gt; 注册闭包请求处理</code></p>

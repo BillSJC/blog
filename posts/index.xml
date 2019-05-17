@@ -18,7 +18,7 @@
       
       <guid>https://blog.debug.online/posts/gin-start/</guid>
       <description>web框架Gin What is Gin Gin是一款开源的轻量级web服务框架，基于http-router搭建而成
-它提供了类型martini的API但在性能上具有巨大优势
+它提供了类似martini的API实现但同时在性能上具有巨大优势
 Why Gin Golang的web服务框架有很多，诸如beego,iris,gin等等，选用Gin作为例子并不是否认其它框架，一是用多了比较习惯，二是可以快速搭建一个API架子
 Install 要安装Gin,只需要国际惯例的go get
  go get github.com/gin-gonic/gin
