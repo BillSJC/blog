@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Bill Shen">
+    <meta name="description" content="Bill Shen Doe&#39;s personal website">
+    <meta name="keywords" content="blog,developer,personal">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="gin web框架快速入门"/>
+<meta name="twitter:description" content="gin"/>
+
+    <meta property="og:title" content="gin web框架快速入门" />
+<meta property="og:description" content="gin" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.debug.online/posts/gin-start/" />
+<meta property="article:published_time" content="2019-05-18T01:17:04&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-18T01:17:04&#43;08:00"/>
+
+
+
+    
+      <base href="https://blog.debug.online/posts/gin-start/">
+    
+    <title>
+  gin web框架快速入门 · SJC
+</title>
+
+    
+      <link rel="canonical" href="https://blog.debug.online/posts/gin-start/">
+    
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CMerriweather:300,700%7CSource+Code+Pro:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" integrity="sha256-oSrCnRYXvHG31SBifqP2PM1uje7SJUyX0nTwO2RJV54=" crossorigin="anonymous" />
+
+    
+      
+      
+      <link rel="stylesheet" href="https://blog.debug.online/css/coder.min.28d751104f30c16da1aa1bb04015cbe662cacfe0d1b01af4f2240ad58580069c.css" integrity="sha256-KNdREE8wwW2hqhuwQBXL5mLKz&#43;DRsBr08iQK1YWABpw=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-16x16.png" sizes="16x16">
+
+    <meta name="generator" content="Hugo 0.55.3" />
+  </head>
+
+  <body class=" ">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://blog.debug.online">
+      SJC
+    </a>
+    <input type="checkbox" id="menu-toggle" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="fas fa-bars"></i></label>
+    <ul class="navigation-list">
+      
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/about/">About</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/posts/">Blog</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/projects/">Projects</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/contact/">Contact me</a>
+          </li>
+        
+      
+      
+    </ul>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">gin web框架快速入门</h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fas fa-calendar"></i>
+              <time datetime='2019-05-18T01:17:04&#43;08:00'>
+                May 18, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fas fa-clock"></i>
+              
+            </span>
+          </div>
+          <div class="categories">
+  <i class="fas fa-folder"></i>
+    <a href="https://blog.debug.online/categories/development/">Development</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/categories/golang/">golang</a></div>
+
+          <div class="tags">
+  <i class="fas fa-tag"></i>
+    <a href="https://blog.debug.online/tags/go/">go</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/golang/">golang</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/development/">development</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/gin/">gin</a></div>
+
+        </div>
+      </header>
+
+      <div>
+        
+
+<h2 id="web框架gin">web框架Gin</h2>
+
+<h3 id="what-is-gin">What is Gin</h3>
+
+<p><img src="https://raw.githubusercontent.com/gin-gonic/logo/master/color.png" alt="logo" /></p>
+
+<p><code>Gin</code>是一款开源的轻量级web服务框架，基于<a href="https://github.com/julienschmidt/httprouter">http-router</a>搭建而成</p>
+
+<p>它提供了类型<code>martini</code>的API但在性能上具有巨大优势</p>
+
+<h3 id="why-gin">Why Gin</h3>
+
+<p>Golang的web服务框架有很多，诸如<code>beego</code>,<code>iris</code>,<code>gin</code>等等，选用<code>Gin</code>作为例子并不是否认其它框架，一是用多了比较习惯，二是可以快速搭建一个API架子</p>
+
+<h3 id="install">Install</h3>
+
+<p>要安装<code>Gin</code>,只需要国际惯例的<code>go get</code></p>
+
+<blockquote>
+<p>go get github.com/gin-gonic/gin</p>
+</blockquote>
+
+<h3 id="start">Start</h3>
+
+<p>创建一个新项目，请注意，如果需要使用包管理，则默认情况下你不能把项目目录建在<code>GOPATH</code>中</p>
+
+<p>在<code>main.go</code>中加入以下代码</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;github.com/gin-gonic/gin&#34;</span>
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	router := gin.Default()
+
+	router.GET(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		c.String(<span style="color:#ff0;font-weight:bold">200</span>,<span style="color:#0ff;font-weight:bold">&#34;hello world!&#34;</span>)
+	})
+
+	router.Run(<span style="color:#0ff;font-weight:bold">&#34;:8888&#34;</span>)
+}</code></pre></div>
+<p>然后编译运行</p>
+
+<p>(Linux)</p>
+
+<blockquote>
+<p>go build -o app
+./app</p>
+</blockquote>
+
+<p>(Windows)</p>
+
+<blockquote>
+<p>go build -o app.exe
+运行 app.exe</p>
+</blockquote>
+
+<p>出现下列提示则代表服务已经启动，如果提示8888端口被占用，那换一个即可</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-log" data-lang="log">[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in &#34;debug&#34; mode. Switch to &#34;release&#34; mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /                         --&gt; main.main.func1 (3 handlers)
+[GIN-debug] Listening and serving HTTP on :8888</code></pre></div>
+<p>这个时候打开浏览器，输入<code>http://127.0.0.1:8888/</code>即可看到hello world了</p>
+
+<h3 id="讲解">讲解</h3>
+
+<p>通过上面的简单例子，我们实现了一个小的web服务器，那么每一行代码具体实现了什么呢</p>
+
+<h4 id="框架模板">框架模板</h4>
+
+<p>首先是<code>gin.Default()</code></p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	router := gin.Default()</code></pre></div>
+<p><code>Default()</code>方法帮助用户快速生成了一个基本服务框架，包括了默认的<code>recove中间件</code>和<code>logger中间件</code>等一系列服务的模板，通过此模板你可以快速生成一个web服务引擎而不需要过多的配置，通常来说，<code>Default()</code>的模板足以满足你大多数情况下的需求</p>
+
+<h4 id="路由注册">路由注册</h4>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	router.GET(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		c.String(<span style="color:#ff0;font-weight:bold">200</span>,<span style="color:#0ff;font-weight:bold">&#34;hello world!&#34;</span>)
+	})</code></pre></div>
+<p>这是一个完整的路由注册模块，可以看到我们通过<code>GET()</code>方法将一个闭包注册到了<code>/</code>路由上(即例子中的<code>http://127.0.0.1:8888/</code>)</p>
+
+<p>我们将其分为两部分介绍</p>
+
+<h4 id="注册函数">注册函数</h4>
+
+<p>首先是外部的路由注册函数<code>GET()</code>，代表了注册某一个路由的GET请求，同理，存在着<code>POST()</code>,<code>DELETE()</code>,<code>PUT()</code>,<code>OPTIONS()</code>等和HTTP请求动词一一对应的方法</p>
+
+<p>当你向web服务发送了一个请求后，gin就会检测对应的路由及请求动词，若不存在对应的handler测会404，若存在，则会调用注册的闭包</p>
+
+<p>···go</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4">r := gin.Default()
+r.GET(&#34;/&#34;)
+r.POST(&#34;/&#34;)
+r.PUT(&#34;/&#34;)
+r.DELETE(&#34;/&#34;)
+r.PATCH(&#34;/&#34;)
+r.OPTIONS(&#34;/&#34;)
+r.HEAD(&#34;/&#34;)</pre></div><div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4">#### 闭包
+
+然后来讲闭包，根据参数列表可知，每一个路由可注册0-n个闭包，具体如下
+
+```go
+	r := gin.Default()
+
+    //零个闭包
+	r.GET(&#34;/r1&#34;)
+
+    //多个闭包
+	r.GET(&#34;/r2&#34;, func(c *gin.Context) {
+		
+	}, func(c *gin.Context) {
+
+	}, func(c *gin.Context) {
+
+	})</pre></div>
+<p>这些闭包会按注册顺序顺序执行，由于存在中间件(将会在以后文章提及)，整体请求处理流程如下</p>
+
+<p><code>语言级请求处理 -&gt; 框架请求处理 -&gt; 中间件请求处理 -&gt; 注册闭包请求处理</code></p>
+
+<p>如果不存在闭包，则中间件处理完成后将会返回默认的<code>200</code>和空payload</p>
+
+<h4 id="gin-context-output">*gin.Context - Output`</h4>
+
+<p>接下来将闭包入参<code>*gin.Context</code>,这其实是经过框架优化的，集成了响应与请求的结构体，可以通过此结构体获取请求参数，也可以通过此结构体发送响应，可以理解为<code>*gin.Context</code>是对整个&rdquo;HTTP请求&rdquo;的一个封装</p>
+
+<p>下例子说明了如何通过<code>*gin.Context</code>输出一个JSON对象</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;github.com/gin-gonic/gin&#34;</span>
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	r := gin.Default()
+
+	r.GET(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		c.JSON(<span style="color:#ff0;font-weight:bold">200</span>,&amp;gin.H{
+			<span style="color:#0ff;font-weight:bold">&#34;error&#34;</span>:<span style="color:#ff0;font-weight:bold">0</span>,
+			<span style="color:#0ff;font-weight:bold">&#34;msg&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;success&#34;</span>,
+		})
+	})
+
+	r.Run(<span style="color:#0ff;font-weight:bold">&#34;:8888&#34;</span>)
+}</code></pre></div>
+<p>可见，我们只需要在<code>c.JSON()</code>方法中输入状态码和JSON对象即可，由于golang中大部分结构都能被正确的转化为JSON，所以只需要传入合理的变量即可</p>
+
+<p>在这里我们使用了<code>&amp;gin.H{}</code>这样一个对象，其本质其实也就是一个<code>map[string]interface{}</code>,只不过Gin对他重载了一些方法，便于框架调用，我们使用的时候只需要将其视为一个map即可</p>
+
+<p><code>gin.H</code>的定义：</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">// H is a shortcut for map[string]interface{}
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> H <span style="color:#fff;font-weight:bold">map</span>[<span style="color:#fff;font-weight:bold">string</span>]<span style="color:#fff;font-weight:bold">interface</span>{}</code></pre></div>
+<p>当然，除了JSON，还有<code>c.XML()</code>,<code>c.String()</code>,<code>c.Status()</code>等输出方法可供渲染API(或输出文本，或者干脆无输出)</p>
+
+<h4 id="gin-context-input">*gin.Context - Input</h4>
+
+<p>当然，<code>*gin.Context</code>只负责输出是不够的，还需要控制输入，下面是几个简单的获取常用请求输入的方法</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> (
+	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+	<span style="color:#0ff;font-weight:bold">&#34;github.com/gin-gonic/gin&#34;</span>
+)
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	r := gin.Default()
+
+	r.POST(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		<span style="color:#007f7f">//获取URL query参数
+</span><span style="color:#007f7f"></span>		id := c.Query(<span style="color:#0ff;font-weight:bold">&#34;id&#34;</span>)
+		<span style="color:#007f7f">//获取POST表单参数
+</span><span style="color:#007f7f"></span>		password := c.PostForm(<span style="color:#0ff;font-weight:bold">&#34;password&#34;</span>)
+		<span style="color:#007f7f">//获取请求头参数
+</span><span style="color:#007f7f"></span>		auth := c.GetHeader(<span style="color:#0ff;font-weight:bold">&#34;Authorization&#34;</span>)
+		<span style="color:#007f7f">//获取原http.Request结构体
+</span><span style="color:#007f7f"></span>		raw := c.Request
+		fmt.Println(id,password,auth,raw)
+	})
+
+	r.Run(<span style="color:#0ff;font-weight:bold">&#34;:8888&#34;</span>)
+}</code></pre></div>
+<h4 id="简单api">简单API</h4>
+
+<p>在获得了输入和输出能力之后，我们就可以利用<code>Gin</code>搭建一个简单的API了</p>
+
+<p>如下方例子，实现了一个最基本的用户注册登录的功能</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+
+<span style="color:#fff;font-weight:bold">import</span> (
+	<span style="color:#0ff;font-weight:bold">&#34;github.com/gin-gonic/gin&#34;</span>
+)
+
+<span style="color:#007f7f">//用户结构体
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> user <span style="color:#fff;font-weight:bold">struct</span>{
+	Name <span style="color:#fff;font-weight:bold">string</span>
+	Age <span style="color:#fff;font-weight:bold">string</span>
+}
+
+<span style="color:#007f7f">//用户字典
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">var</span> users  <span style="color:#fff;font-weight:bold">map</span>[<span style="color:#fff;font-weight:bold">string</span>]*user
+
+<span style="color:#fff;font-weight:bold">func</span> main(){
+	<span style="color:#007f7f">//初始化用户数组
+</span><span style="color:#007f7f"></span>	users := <span style="color:#fff;font-weight:bold">make</span>(<span style="color:#fff;font-weight:bold">map</span>[<span style="color:#fff;font-weight:bold">string</span>]*user)
+	
+	<span style="color:#007f7f">//初始化Gin引擎
+</span><span style="color:#007f7f"></span>	r := gin.Default()
+
+	<span style="color:#007f7f">//用户注册方法
+</span><span style="color:#007f7f"></span>	r.POST(<span style="color:#0ff;font-weight:bold">&#34;/user&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		<span style="color:#007f7f">//添加用户
+</span><span style="color:#007f7f"></span>		username := c.PostForm(<span style="color:#0ff;font-weight:bold">&#34;username&#34;</span>)
+		users[username] = &amp;user{
+			Name:c.PostForm(<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>),
+			Age:c.PostForm(<span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>),
+		}
+		<span style="color:#007f7f">//返回JSON
+</span><span style="color:#007f7f"></span>		c.JSON(<span style="color:#ff0;font-weight:bold">200</span>,&amp;gin.H{
+			<span style="color:#0ff;font-weight:bold">&#34;error&#34;</span>:<span style="color:#ff0;font-weight:bold">0</span>,
+			<span style="color:#0ff;font-weight:bold">&#34;msg&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;success&#34;</span>,
+			<span style="color:#0ff;font-weight:bold">&#34;data&#34;</span>:<span style="color:#fff;font-weight:bold">nil</span>,
+		})
+	})
+	
+	r.GET(<span style="color:#0ff;font-weight:bold">&#34;/user&#34;</span>, <span style="color:#fff;font-weight:bold">func</span>(c *gin.Context) {
+		<span style="color:#007f7f">//获取用户名
+</span><span style="color:#007f7f"></span>		username := c.Query(<span style="color:#0ff;font-weight:bold">&#34;username&#34;</span>)
+		<span style="color:#007f7f">//返回数据
+</span><span style="color:#007f7f"></span>		c.JSON(<span style="color:#ff0;font-weight:bold">200</span>,&amp;gin.H{
+			<span style="color:#0ff;font-weight:bold">&#34;error&#34;</span>:<span style="color:#ff0;font-weight:bold">0</span>,
+			<span style="color:#0ff;font-weight:bold">&#34;msg&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;success&#34;</span>,
+			<span style="color:#0ff;font-weight:bold">&#34;data&#34;</span>:users[username],
+		})
+	})
+
+	r.Run(<span style="color:#0ff;font-weight:bold">&#34;:8888&#34;</span>)
+}</code></pre></div>
+<p>对应的接口如下</p>
+
+<h5 id="post-user-注册用户">POST <code>/user</code> 注册用户</h5>
+
+<p>PostForm:</p>
+
+<ul>
+<li><code>username</code> 用户名</li>
+<li><code>name</code> 姓名</li>
+<li><code>age</code> 年龄</li>
+</ul>
+
+<h5 id="get-user-获取用户信息">GET <code>/user</code> 获取用户信息</h5>
+
+<p>Query:</p>
+
+<ul>
+<li><code>username</code> 用户名</li>
+</ul>
+
+      </div>
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+      <h3>See also in Getting Started</h3>
+      <nav>
+        <ul>
+        
+        
+          
+        
+          
+            <li>
+              <a href="https://blog.debug.online/posts/reflect/">golang中的reflect 反射包(上)</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://blog.debug.online/posts/interface/">Golang中的interface{}</a>
+            </li>
+          
+        
+        </ul>
+      </nav>
+    
+  
+</section>
+
+
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "emmmm" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    
+      <p>Power By Hugo</p>
+    
+     © 2019
+    
+       · 
+       <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+    
+       · 
+      [<a href="https://github.com/BillSJC"></a>]
+    
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>

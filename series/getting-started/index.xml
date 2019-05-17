@@ -6,10 +6,32 @@
     <description>Recent content in Getting Started on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Mon, 22 Apr 2019 21:05:40 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 18 May 2019 01:17:04 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.debug.online/series/getting-started/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>gin web框架快速入门</title>
+      <link>https://blog.debug.online/posts/gin-start/</link>
+      <pubDate>Sat, 18 May 2019 01:17:04 +0800</pubDate>
+      
+      <guid>https://blog.debug.online/posts/gin-start/</guid>
+      <description>web框架Gin What is Gin Gin是一款开源的轻量级web服务框架，基于http-router搭建而成
+它提供了类型martini的API但在性能上具有巨大优势
+Why Gin Golang的web服务框架有很多，诸如beego,iris,gin等等，选用Gin作为例子并不是否认其它框架，一是用多了比较习惯，二是可以快速搭建一个API架子
+Install 要安装Gin,只需要国际惯例的go get
+ go get github.com/gin-gonic/gin
+ Start 创建一个新项目，请注意，如果需要使用包管理，则默认情况下你不能把项目目录建在GOPATH中
+在main.go中加入以下代码
+package main import &amp;#34;github.com/gin-gonic/gin&amp;#34; func main(){ router := gin.Default() router.GET(&amp;#34;/&amp;#34;, func(c *gin.Context) { c.String(200,&amp;#34;hello world!&amp;#34;) }) router.Run(&amp;#34;:8888&amp;#34;) } 然后编译运行
+(Linux)
+ go build -o app ./app
+ (Windows)
+ go build -o app.exe 运行 app.exe
+ 出现下列提示则代表服务已经启动，如果提示8888端口被占用，那换一个即可
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.</description>
+    </item>
     
     <item>
       <title>golang中的reflect 反射包(上)</title>
