@@ -6,10 +6,29 @@
     <description>Recent content on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Tue, 28 May 2019 10:31:17 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 30 Jun 2019 13:55:40 +0800</lastBuildDate>
     
 	<atom:link href="https://billsjc.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用Go实现AppleID登录</title>
+      <link>https://billsjc.github.io/blog/posts/sign-in-with-apple/</link>
+      <pubDate>Sun, 30 Jun 2019 13:55:40 +0800</pubDate>
+      
+      <guid>https://billsjc.github.io/blog/posts/sign-in-with-apple/</guid>
+      <description>使用Go实现AppleID的Oauth登录 苹果在前日发布iOS13的时候顺路发布了他的第三方登录Sign in with Apple，并且还要求所有使用第三方登陆的APP必须介入此功能并将其置顶，emmmm对于这种行为本人不做任何评价，既然人家要求，那就实现呗
+官方文档 Sign in with Apple的官方文档可以说是少之又少，文档地址
+目前Sign In with Apple REST API共有两个接口
+ Fetch Apple&amp;rsquo;s public key for verifying token signature - 获取苹果的公钥进行验证 Generate and validate tokens - 获得和验证Token  显然,第一个获取公钥的接口是拿来检验Response的，那就只剩下一个接口了，我们来看看他都说了些啥(下为官方文档原文)
+Validate the authorization grant code with Apple to obtain tokens or validate an existing refresh token. 大致翻译：校验Apple的authorization code并获得AccessToken和RefreshToken 那看起来应该是一个挺正常的Oauth，通过Code换Token，那我们来看看请求结构
+URL:
+POST https://appleid.apple.com/auth/token
+Params(翻译后):
+这里的参数有很多坑，将会在下面逐个讲解
+ client_id client_secret code grant_type redirect_uri  client_id 首先遇到的第一个坑就是client_id,这个client_id究竟指啥呢，原文是：
+The application identifier for your app.</description>
+    </item>
     
     <item>
       <title>gin 输入输出处理</title>
@@ -69,25 +88,6 @@ Type 和 Kind 顾名思义，Type和Kind都是&amp;rdquo;类型&amp;rdquo;的意
 官方文档定义如下
 Kind:
 //A Kind represents the specific kind of type that a Type represents. The zero Kind is not a valid kind. type Kind uint const ( Invalid Kind = iota Bool Int Int8 .</description>
-    </item>
-    
-    <item>
-      <title>使用GO实现AppleID登录</title>
-      <link>https://billsjc.github.io/blog/posts/sign-in-with-apple/</link>
-      <pubDate>Mon, 22 Apr 2019 21:05:40 +0800</pubDate>
-      
-      <guid>https://billsjc.github.io/blog/posts/sign-in-with-apple/</guid>
-      <description>使用Go实现AppleID的Oauth登录 苹果在前日发布iOS13的时候顺路发布了他的第三方登录Sign in with Apple，并且还要求所有使用第三方登陆的APP必须介入此功能并将其置顶，emmmm对于这种行为本人不做任何评价，既然人家要求，那就实现呗
-官方文档 Sign in with Apple的官方文档可以说是少之又少，文档地址
-目前Sign In with Apple REST API共有两个接口
- Fetch Apple&amp;rsquo;s public key for verifying token signature - 获取苹果的公钥进行验证 Generate and validate tokens - 获得和验证Token  显然,第一个获取公钥的接口是拿来检验Response的，那就只剩下一个接口了，我们来看看他都说了些啥(下为官方文档原文)
-Validate the authorization grant code with Apple to obtain tokens or validate an existing refresh token. 大致翻译：校验Apple的authorization code并获得AccessToken和RefreshToken 那看起来应该是一个挺正常的Oauth，通过Code换Token，那我们来看看请求结构
-URL:
-POST https://appleid.apple.com/auth/token
-Params(翻译后):
-这里的参数有很多坑，将会在下面逐个讲解
- client_id client_secret code grant_type redirect_uri  client_id 首先遇到的第一个坑就是client_id,这个client_id究竟指啥呢，原文是：
-The application identifier for your app.</description>
     </item>
     
     <item>
