@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Package on SJC</title>
-    <link>https://blog.debug.online/series/package/</link>
+    <link>https://billsjc.github.io/blog/series/package/</link>
     <description>Recent content in Package on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
     <lastBuildDate>Mon, 22 Apr 2019 21:05:40 +0800</lastBuildDate>
     
-	<atom:link href="https://blog.debug.online/series/package/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://billsjc.github.io/blog/series/package/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用GO实现AppleID登录</title>
-      <link>https://blog.debug.online/posts/sign-in-with-apple/</link>
+      <link>https://billsjc.github.io/blog/posts/sign-in-with-apple/</link>
       <pubDate>Mon, 22 Apr 2019 21:05:40 +0800</pubDate>
       
-      <guid>https://blog.debug.online/posts/sign-in-with-apple/</guid>
+      <guid>https://billsjc.github.io/blog/posts/sign-in-with-apple/</guid>
       <description>使用Go实现AppleID的Oauth登录 苹果在前日发布iOS13的时候顺路发布了他的第三方登录Sign in with Apple，并且还要求所有使用第三方登陆的APP必须介入此功能并将其置顶，emmmm对于这种行为本人不做任何评价，既然人家要求，那就实现呗
 官方文档 Sign in with Apple的官方文档可以说是少之又少，文档地址
 目前Sign In with Apple REST API共有两个接口

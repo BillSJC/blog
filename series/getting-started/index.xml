@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Getting Started on SJC</title>
-    <link>https://blog.debug.online/series/getting-started/</link>
+    <link>https://billsjc.github.io/blog/series/getting-started/</link>
     <description>Recent content in Getting Started on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
     <lastBuildDate>Tue, 28 May 2019 10:31:17 +0800</lastBuildDate>
     
-	<atom:link href="https://blog.debug.online/series/getting-started/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://billsjc.github.io/blog/series/getting-started/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>gin 输入输出处理</title>
-      <link>https://blog.debug.online/posts/gin-io/</link>
+      <link>https://billsjc.github.io/blog/posts/gin-io/</link>
       <pubDate>Tue, 28 May 2019 10:31:17 +0800</pubDate>
       
-      <guid>https://blog.debug.online/posts/gin-io/</guid>
+      <guid>https://billsjc.github.io/blog/posts/gin-io/</guid>
       <description>Gin的输入输出 在上一篇文章&amp;ldquo;gin web框架快速入门中我对Gin框架进行了大致的介绍并简单的实现了一个基于Gin的HTTP服务器，这回来主要介绍一下Gin的输入输出处理
 输入处理 首先，我们需要整理一下数据可以从哪些地方输入
  Query 即URL参数，URL中?a=xxx&amp;amp;b=xxxx诸如此类的参数列表，由于是在URL字符串中，所以只能是字符串 Param URL路径信息，Gin支持路径通配符，如设置GET /user/info/:username后，Gin会检测:1通配符对应的路径项，若访问了GET /user/info/foo,则:username就对应了foo，具体用法将会在下方提及 Header 请求头，即HTTP请求头部的键值对 Payload 请求体，通常用于传输大量数据，POST表单数据也在此传输 其它不常用输入，如SSL连接状态，TCP连接状态等等，在此不过多赘述  输入场景举例-用户登录 我们通过一个用户登录的场景解释一下基本的表单数据输入
@@ -29,10 +29,10 @@ package main import &amp;#34;github.com/gin-gonic/gin&amp;#34; func main(){ g :=
     
     <item>
       <title>gin web框架快速入门</title>
-      <link>https://blog.debug.online/posts/gin-start/</link>
+      <link>https://billsjc.github.io/blog/posts/gin-start/</link>
       <pubDate>Sat, 18 May 2019 01:17:04 +0800</pubDate>
       
-      <guid>https://blog.debug.online/posts/gin-start/</guid>
+      <guid>https://billsjc.github.io/blog/posts/gin-start/</guid>
       <description>web框架Gin What is Gin Gin是一款开源的轻量级web服务框架，基于http-router搭建而成
 它提供了类似martini的API实现但同时在性能上具有巨大优势
 Why Gin Golang的web服务框架有很多，诸如beego,iris,gin等等，选用Gin作为例子并不是否认其它框架，一是用多了比较习惯，二是可以快速搭建一个API架子
@@ -51,10 +51,10 @@ package main import &amp;#34;github.com/gin-gonic/gin&amp;#34; func main(){ rout
     
     <item>
       <title>golang中的reflect 反射包(上)</title>
-      <link>https://blog.debug.online/posts/reflect/</link>
+      <link>https://billsjc.github.io/blog/posts/reflect/</link>
       <pubDate>Mon, 22 Apr 2019 21:05:40 +0800</pubDate>
       
-      <guid>https://blog.debug.online/posts/reflect/</guid>
+      <guid>https://billsjc.github.io/blog/posts/reflect/</guid>
       <description>reflect 反射 什么是反射 对于反射，最简单的理解就是
 我给你一个变量a:=1，你告诉我这个a变量是个int，值为1
 尤其是对于interface{}接口类型，由于丢失了其真正的显式类型，需要通过反射来获取类型
@@ -73,10 +73,10 @@ Kind:
     
     <item>
       <title>Golang中的interface{}</title>
-      <link>https://blog.debug.online/posts/interface/</link>
+      <link>https://billsjc.github.io/blog/posts/interface/</link>
       <pubDate>Mon, 22 Apr 2019 09:45:50 +0800</pubDate>
       
-      <guid>https://blog.debug.online/posts/interface/</guid>
+      <guid>https://billsjc.github.io/blog/posts/interface/</guid>
       <description>万能的interface{} 写过golang的童鞋们应该都知道这个叫做interface{}的东西，他的功能可以说是有点强大的，比如它可以被任意类型(包括其他interface)赋值
 //string str := &amp;#34;something to say&amp;#34; var i interface{} i = str fmt.Println(str) //something to say fmt.Println(i) //something to say  //num num := 10085 i = num fmt.Println(num) //10086 fmt.Println(i) //10086 是不是很像PHP,Pyhton中的弱类型？在某种意义上来说,如果你将任何东西赋值给了interface,并且不需要做任何层面的数据处理(不需要里边的对某一项数据做取值、赋值操作)的话，确实可以当做golang中的弱类型来使用，直接用于Print和输出JSON等操作
 当然，试图从interface中取值并不是一个很麻烦的操作，这将在后面将reflect包时提及
