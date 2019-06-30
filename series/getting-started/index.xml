@@ -6,10 +6,26 @@
     <description>Recent content in Getting Started on SJC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Sat, 18 May 2019 01:17:04 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 28 May 2019 10:31:17 +0800</lastBuildDate>
     
 	<atom:link href="https://blog.debug.online/series/getting-started/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>gin 输入输出处理</title>
+      <link>https://blog.debug.online/posts/gin-io/</link>
+      <pubDate>Tue, 28 May 2019 10:31:17 +0800</pubDate>
+      
+      <guid>https://blog.debug.online/posts/gin-io/</guid>
+      <description>Gin的输入输出 在上一篇文章&amp;ldquo;gin web框架快速入门中我对Gin框架进行了大致的介绍并简单的实现了一个基于Gin的HTTP服务器，这回来主要介绍一下Gin的输入输出处理
+输入处理 首先，我们需要整理一下数据可以从哪些地方输入
+ Query 即URL参数，URL中?a=xxx&amp;amp;b=xxxx诸如此类的参数列表，由于是在URL字符串中，所以只能是字符串 Param URL路径信息，Gin支持路径通配符，如设置GET /user/info/:username后，Gin会检测:1通配符对应的路径项，若访问了GET /user/info/foo,则:username就对应了foo，具体用法将会在下方提及 Header 请求头，即HTTP请求头部的键值对 Payload 请求体，通常用于传输大量数据，POST表单数据也在此传输 其它不常用输入，如SSL连接状态，TCP连接状态等等，在此不过多赘述  输入场景举例-用户登录 我们通过一个用户登录的场景解释一下基本的表单数据输入
+首先前端页面有个这样的表单
+   名称 Name 说明     用户名 username 用户名(string)   密码 password 密码(string)    登录url为 POST /login?showUsername={true/false}
+用户名密码通过表单传输，showUsername参数用于决定是否出输出用户名
+首先贴完整代码
+package main import &amp;#34;github.com/gin-gonic/gin&amp;#34; func main(){ g := gin.Default() //注册路由 	g.POST(&amp;#34;/login&amp;#34;,loginHandler) } //注册闭包 func loginHandler(c *gin.Context){ //获取URL输入 	showUsername := c.Query(&amp;#34;showUsername&amp;#34;) //获取POST表单输入 	username := c.</description>
+    </item>
     
     <item>
       <title>gin web框架快速入门</title>

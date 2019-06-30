@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+  <head>
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-140386723-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Bill Shen">
+    <meta name="description" content="Bill Shen Doe&#39;s personal website">
+    <meta name="keywords" content="blog,developer,personal">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用GO实现AppleID登录"/>
+<meta name="twitter:description" content="Sign in with Apple ID"/>
+
+    <meta property="og:title" content="使用GO实现AppleID登录" />
+<meta property="og:description" content="Sign in with Apple ID" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.debug.online/posts/sign-in-with-apple/" />
+<meta property="article:published_time" content="2019-04-22T21:05:40&#43;08:00"/>
+<meta property="article:modified_time" content="2019-04-22T21:05:40&#43;08:00"/>
+
+
+
+    
+      <base href="https://blog.debug.online/posts/sign-in-with-apple/">
+    
+    <title>
+  使用GO实现AppleID登录 · SJC
+</title>
+
+    
+      <link rel="canonical" href="https://blog.debug.online/posts/sign-in-with-apple/">
+    
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CMerriweather:300,700%7CSource+Code+Pro:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" integrity="sha256-oSrCnRYXvHG31SBifqP2PM1uje7SJUyX0nTwO2RJV54=" crossorigin="anonymous" />
+
+    
+      
+      
+      <link rel="stylesheet" href="https://blog.debug.online/css/coder.min.28d751104f30c16da1aa1bb04015cbe662cacfe0d1b01af4f2240ad58580069c.css" integrity="sha256-KNdREE8wwW2hqhuwQBXL5mLKz&#43;DRsBr08iQK1YWABpw=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://blog.debug.online/images/favicon-16x16.png" sizes="16x16">
+
+    <meta name="generator" content="Hugo 0.55.3" />
+  </head>
+
+  <body class=" ">
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://blog.debug.online">
+      SJC
+    </a>
+    <input type="checkbox" id="menu-toggle" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="fas fa-bars"></i></label>
+    <ul class="navigation-list">
+      
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/about/">About</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/posts/">Blog</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/projects/">Projects</a>
+          </li>
+        
+          <li class="navigation-item">
+            <a class="navigation-link" href="https://blog.debug.online/contact/">Contact me</a>
+          </li>
+        
+      
+      
+    </ul>
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">使用GO实现AppleID登录</h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fas fa-calendar"></i>
+              <time datetime='2019-04-22T21:05:40&#43;08:00'>
+                April 22, 2019
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fas fa-clock"></i>
+              
+            </span>
+          </div>
+          <div class="categories">
+  <i class="fas fa-folder"></i>
+    <a href="https://blog.debug.online/categories/development/">Development</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/categories/golang/">golang</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/categories/ios/">iOS</a></div>
+
+          <div class="tags">
+  <i class="fas fa-tag"></i>
+    <a href="https://blog.debug.online/tags/go/">go</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/golang/">golang</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/apple/">apple</a>
+      <span class="separator">•</span>
+    <a href="https://blog.debug.online/tags/development/">development</a></div>
+
+        </div>
+      </header>
+
+      <div>
+        
+
+<h1 id="使用go实现appleid的oauth登录">使用Go实现AppleID的Oauth登录</h1>
+
+<p>苹果在前日发布<code>iOS13</code>的时候顺路发布了他的第三方登录<code>Sign in with Apple</code>，并且还要求所有使用第三方登陆的APP必须介入此功能并将其置顶，emmmm对于这种行为本人不做任何评价，既然人家要求，那就实现呗</p>
+
+<h2 id="官方文档">官方文档</h2>
+
+<p><code>Sign in with Apple</code>的官方文档可以说是少之又少，<a href="https://developer.apple.com/documentation/signinwithapplerestapi">文档地址</a></p>
+
+<p>目前<code>Sign In with Apple REST API</code>共有两个接口</p>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/signinwithapplerestapi/fetch_apple_s_public_key_for_verifying_token_signature">Fetch Apple&rsquo;s public key for verifying token signature</a></li>
+<li>- 获取苹果的公钥进行验证</li>
+<li><a href="https://developer.apple.com/documentation/signinwithapplerestapi/generate_and_validate_tokens">Generate and validate tokens</a></li>
+<li>- 获得和验证Token</li>
+</ul>
+
+<p>显然,第一个获取公钥的接口是拿来检验Response的，那就只剩下一个接口了，我们来看看他都说了些啥(下为官方文档原文)</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Validate the authorization grant code with Apple to obtain tokens or validate an existing refresh token.
+
+大致翻译：校验Apple的authorization code并获得AccessToken和RefreshToken</code></pre></div>
+<p>那看起来应该是一个挺正常的Oauth，通过Code换Token，那我们来看看请求结构</p>
+
+<p>URL:</p>
+
+<p><code>POST https://appleid.apple.com/auth/token</code></p>
+
+<p>Params(翻译后):</p>
+
+<p>这里的参数有很多坑，将会在下面逐个讲解</p>
+
+<ul>
+<li>client_id</li>
+<li>client_secret</li>
+<li>code</li>
+<li>grant_type</li>
+<li>redirect_uri</li>
+</ul>
+
+<h3 id="client-id">client_id</h3>
+
+<p>首先遇到的第一个坑就是<code>client_id</code>,这个client_id究竟指啥呢，原文是：</p>
+
+<p>The application identifier for your app.</p>
+
+<p>你的应用标识，但我试了n次应用标识都8行，最后发现是你的开通了<code>Sign in with apple id</code>的Service的ID，具体地址是</p>
+
+<blockquote>
+<p>Apple开发控制台 -&gt; Certificates, Identifiers &amp; Profiles -&gt; Certificates, Identifiers &amp; Profiles -&gt; 筛选Services IDs 的 IDENTIFIER</p>
+</blockquote>
+
+<p>如果你没有申请过相关Service，那申请一个即可</p>
+
+<h3 id="client-secret">client_secret</h3>
+
+<p>这并不是什么正常的固定字符串，这是一个JWT Token，Apple在文档下面专门放了一块来讲解这个Secret的生成，具体在<a href="https://developer.apple.com/documentation/signinwithapplerestapi/generate_and_validate_tokens">文档地址</a>的<code>Creating the Client Secret</code>章节，为了方便阅读那我就先把这段东西搬下来</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">Creating the Client Secret
+The client_secret is a JSON object that contains a header and payload. The header contains:
+
+alg
+The encryption algorithm used to encrypt the token.
+
+kid
+A 10-character key identifier obtained from your developer account.
+
+In the claims payload of the token, include:
+
+iss
+The issuer registered claim key, which has the value of your 10-character Team ID, obtained from your developer account.
+
+iat
+The issued at registered claim key, the value of which indicates the time at which the token was generated, in terms of the number of seconds since Epoch, in UTC.
+
+exp
+The expiration time registered claim key, the value of which must not be greater than 15777000 (6 months in seconds) from the Current Unix Time on the server.
+
+aud
+The audience registered claim key, the value of which identifies the recipient the JWT is intended for. Since this token is meant for Apple, use https://appleid.apple.com.
+
+sub
+The subject registered claim key, the value of which identifies the principal that is the subject of the JWT. Use the same value as client_id as this token is meant for your application.
+
+After creating the token, sign it with the same private key, the identifier of which is specified in kid. Encrypt the token using the Elliptic Curve Digital Signature Algorithm (ECDSA) with the P-256 curve and the SHA-256 hash algorithm. Specify the value ES256 in the algorithm header key.
+
+A decoded client_secret JWT token has the following format:</code></pre></div>
+<p>然后给了一个标准的JWT样例</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="font-weight:bold">&#34;alg&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;ES256&#34;</span>,
+    <span style="font-weight:bold">&#34;kid&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;ABC123DEFG&#34;</span>
+}
+{
+    <span style="font-weight:bold">&#34;iss&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;DEF123GHIJ&#34;</span>,
+    <span style="font-weight:bold">&#34;iat&#34;</span>: <span style="color:#ff0;font-weight:bold">1437179036</span>,
+    <span style="font-weight:bold">&#34;exp&#34;</span>: <span style="color:#ff0;font-weight:bold">1493298100</span>,
+    <span style="font-weight:bold">&#34;aud&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;https://appleid.apple.com&#34;</span>,
+    <span style="font-weight:bold">&#34;sub&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;com.mytest.app&#34;</span>
+}</code></pre></div>
+<p>基本意思就是你的<code>client_secret</code>实际上是一个使用Apple签发的私钥加密过的JWT Token，关于私钥申请可以直接前往<a href="https://developer.apple.com/account/resources/authkeys/list">apple 控制台</a></p>
+
+<p>然后这里罗列一下你需要用到的所有东西</p>
+
+<ul>
+<li>你的<code>TeamID</code>，通常就是控制台右上角的10位字符串</li>
+<li>你的<code>ServiceID</code>，就是你的<code>client_id</code>，申请方法见上文</li>
+<li>你的私钥本体及key_id，申请方法见上文</li>
+<li>你的回调地址，应当在申请Service的时候一并配置</li>
+</ul>
+
+<p>好，接下来将一下具体的实现方式</p>
+
+<h2 id="golang实现">Golang实现</h2>
+
+<p>其实并没有什么技术难题，主要分为以下步骤：</p>
+
+<ul>
+<li>装入Apple私钥</li>
+<li>生成JWT Token</li>
+<li>加密JWT Token</li>
+<li>带Code验证请求</li>
+</ul>
+
+<p>首先，定义了一个<code>AppleConfig</code>的结构体，用来装载所有配置</p>
+
+<p>其中<code>AESCert</code>是 装入私钥 步骤中直接载入的结构体</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">type</span> AppleConfig <span style="color:#fff;font-weight:bold">struct</span> {
+	TeamID      <span style="color:#fff;font-weight:bold">string</span>      <span style="color:#007f7f">//Your Apple Team ID
+</span><span style="color:#007f7f"></span>	ClientID    <span style="color:#fff;font-weight:bold">string</span>      <span style="color:#007f7f">//Your Service which enable sign-in-with-apple service
+</span><span style="color:#007f7f"></span>	RedirectURI <span style="color:#fff;font-weight:bold">string</span>      <span style="color:#007f7f">//Your RedirectURI config in apple website
+</span><span style="color:#007f7f"></span>	KeyID       <span style="color:#fff;font-weight:bold">string</span>      <span style="color:#007f7f">//Your Secret Key ID
+</span><span style="color:#007f7f"></span>	AESCert     <span style="color:#fff;font-weight:bold">interface</span>{} <span style="color:#007f7f">//Your Secret Key Created By X509 package
+</span><span style="color:#007f7f"></span>}</code></pre></div>
+<p>然后实例化一个结构体</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">a := &amp;AppleConfig{
+		teamID, <span style="color:#007f7f">//Team ID
+</span><span style="color:#007f7f"></span>		clientID,   <span style="color:#007f7f">//Service ID作为ClientID
+</span><span style="color:#007f7f"></span>		redirectURI,    <span style="color:#007f7f">//Service中的回调地址
+</span><span style="color:#007f7f"></span>		keyID,  <span style="color:#007f7f">//私钥KeyID
+</span><span style="color:#007f7f"></span>		<span style="color:#fff;font-weight:bold">nil</span>,    <span style="color:#007f7f">//私钥的占位符
+</span><span style="color:#007f7f"></span>	}</code></pre></div>
+<h3 id="装入私钥">装入私钥</h3>
+
+<p>由于苹果给你私钥的时候文件后缀是P8,所以可以直接判定私钥格式为<code>PKCS8</code>,直接使用<code>x509</code>系统库的私钥解析就可以</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//装载私钥
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (a *AppleConfig) LoadP8CertByByte(str []<span style="color:#fff;font-weight:bold">byte</span>) (err <span style="color:#fff;font-weight:bold">error</span>) {
+	block, _ := pem.Decode([]<span style="color:#fff;font-weight:bold">byte</span>(str))
+	cert, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+		<span style="color:#fff;font-weight:bold">return</span>
+	}
+	a.AESCert = cert
+	<span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">nil</span>
+}
+
+<span style="color:#007f7f">//从文件中装载私钥
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (a *AppleConfig) LoadP8CertByFile(path <span style="color:#fff;font-weight:bold">string</span>) (err <span style="color:#fff;font-weight:bold">error</span>) {
+	b, err := ioutil.ReadFile(path)
+	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+		<span style="color:#fff;font-weight:bold">return</span>
+	}
+	<span style="color:#fff;font-weight:bold">return</span> a.LoadP8CertByByte([]<span style="color:#fff;font-weight:bold">byte</span>(b))
+}</code></pre></div>
+<h3 id="生成jwt-token">生成JWT Token</h3>
+
+<p>这里直接使用<code>github.com/dgrijalva/jwt-go</code>库进行JWT Token的构建和解析，加密</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Go" data-lang="Go">    expireTime = <span style="color:#ff0;font-weight:bold">86400</span>*<span style="color:#ff0;font-weight:bold">14</span> <span style="color:#007f7f">//14天过期
+</span><span style="color:#007f7f"></span>	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+		<span style="color:#0ff;font-weight:bold">&#34;iss&#34;</span>: a.TeamID,
+		<span style="color:#0ff;font-weight:bold">&#34;iat&#34;</span>: time.Now().Unix(),
+		<span style="color:#0ff;font-weight:bold">&#34;exp&#34;</span>: time.Now().Unix() + expireTime,
+		<span style="color:#0ff;font-weight:bold">&#34;aud&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;https://appleid.apple.com&#34;</span>,
+		<span style="color:#0ff;font-weight:bold">&#34;sub&#34;</span>: a.ClientID,
+	})
+	<span style="color:#007f7f">//set JWT header
+</span><span style="color:#007f7f"></span>	token.Header = <span style="color:#fff;font-weight:bold">map</span>[<span style="color:#fff;font-weight:bold">string</span>]<span style="color:#fff;font-weight:bold">interface</span>{}{
+		<span style="color:#0ff;font-weight:bold">&#34;kid&#34;</span>: a.KeyID,
+		<span style="color:#0ff;font-weight:bold">&#34;alg&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;ES256&#34;</span>,
+    }</code></pre></div>
+<h3 id="加密jwt-token">加密JWT Token</h3>
+
+<p>没啥可介绍的，因为上文的库中直接集成了解密，只需要传入Key即可</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4">	//加密Token
+	tokenString, _ := token.SignedString(a.AESCert)</pre></div>
+<h3 id="带code验证请求">带Code验证请求</h3>
+
+<p>前几步已经把请求参数构造好了，接下来就查发请求了，当然，你需要先准备一个code以便验证，注意Code的有效期是5min</p>
+
+<p>这里使用<code>Gorequest</code>作为请求库</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007f7f">//响应结构体
+</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> AppleAuthToken <span style="color:#fff;font-weight:bold">struct</span> {
+	AccessToken  <span style="color:#fff;font-weight:bold">string</span> <span style="color:#0ff;font-weight:bold">`json:&#34;access_token&#34;`</span>  <span style="color:#007f7f">//AccessToken
+</span><span style="color:#007f7f"></span>	ExpiresIn    <span style="color:#fff;font-weight:bold">int64</span>  <span style="color:#0ff;font-weight:bold">`json:&#34;expires_in&#34;`</span>    <span style="color:#007f7f">//Expires in
+</span><span style="color:#007f7f"></span>	IDToken      <span style="color:#fff;font-weight:bold">string</span> <span style="color:#0ff;font-weight:bold">`json:&#34;id_token&#34;`</span>      <span style="color:#007f7f">//ID token
+</span><span style="color:#007f7f"></span>	RefreshToken <span style="color:#fff;font-weight:bold">string</span> <span style="color:#0ff;font-weight:bold">`json:&#34;refresh_token&#34;`</span> <span style="color:#007f7f">//RF token
+</span><span style="color:#007f7f"></span>	TokenType    <span style="color:#fff;font-weight:bold">string</span> <span style="color:#0ff;font-weight:bold">`json:&#34;token_type&#34;`</span>    <span style="color:#007f7f">//Token Type
+</span><span style="color:#007f7f"></span>}
+
+v := url.Values{}
+    <span style="color:#007f7f">//设置参数
+</span><span style="color:#007f7f"></span>	v.Set(<span style="color:#0ff;font-weight:bold">&#34;client_id&#34;</span>, a.ClientID)
+	v.Set(<span style="color:#0ff;font-weight:bold">&#34;client_secret&#34;</span>, tokenString)
+	v.Set(<span style="color:#0ff;font-weight:bold">&#34;code&#34;</span>, code)
+	v.Set(<span style="color:#0ff;font-weight:bold">&#34;grant_type&#34;</span>, AppleGrantType)
+	v.Set(<span style="color:#0ff;font-weight:bold">&#34;redirect_uri&#34;</span>, a.RedirectURI)
+	fmt.Println(tokenString)
+	vs := v.Encode()
+	<span style="color:#007f7f">//send request
+</span><span style="color:#007f7f"></span>	resp, body, err2 := gorequest.New().Post(<span style="color:#0ff;font-weight:bold">&#34;https://appleid.apple.com/auth/token&#34;</span>).Type(<span style="color:#0ff;font-weight:bold">&#34;urlencoded&#34;</span>).Send(vs).End()
+	<span style="color:#fff;font-weight:bold">if</span> err2 != <span style="color:#fff;font-weight:bold">nil</span> {
+		<span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">nil</span>, fmt.Errorf(fmt.Sprint(err2))
+	}
+	<span style="color:#007f7f">//check response
+</span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">if</span> resp.StatusCode != <span style="color:#ff0;font-weight:bold">200</span> {
+		fmt.Println(body)
+		<span style="color:#fff;font-weight:bold">panic</span>(errors.New(<span style="color:#0ff;font-weight:bold">&#34;post failed : resp code is not 200&#34;</span>))
+	}
+	t := <span style="color:#fff;font-weight:bold">new</span>(AppleAuthToken)
+	err := json.Unmarshal([]<span style="color:#fff;font-weight:bold">byte</span>(body), t)
+	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+		<span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">nil</span>, err
+	}
+	<span style="color:#fff;font-weight:bold">return</span> t, <span style="color:#fff;font-weight:bold">nil</span></code></pre></div>
+<p>好了，然后你就获得Token了</p>
+
+<p><strong>然而！</strong>这个Token目前并不能提供给你任何数据的访问权限，这点是在<a href="https://developer.apple.com/documentation/signinwithapplerestapi/tokenresponse">官方文档</a>中有说明的，估计可能是因为苹果赶DDL赶出来的，大概后面会提供一些基础信息接口</p>
+
+<blockquote>
+<p>Currently, no data set has been defined for access.</p>
+</blockquote>
+
+<p>不过呢，至少你获得了一个用户特征标记<code>ID_Token</code>,至少用来做身份验证验证是没问题了</p>
+
+<h2 id="总结一下">总结一下</h2>
+
+<p>不得不说，苹果给出来的接口确实是十分标准的，不过这个接口文档看起来更像是一个艺术品(过于好看但排版太散)，并不利于程序猿们一眼扫尽，另外，文档中的Typo也是数不胜数(比如<code>client_id</code>根本就没说清楚，完全靠自己瞎猜)，希望水果公司在成为互联网企业的路上加一把力.jpg</p>
+
+      </div>
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "emmmm" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    
+      <p>Power By Hugo</p>
+    
+     © 2019
+    
+       · 
+       <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+    
+    
+       · 
+      [<a href="https://github.com/BillSJC"></a>]
+    
+  </section>
+</footer>
+
+    </main>
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-140386723-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+  </body>
+
+</html>
