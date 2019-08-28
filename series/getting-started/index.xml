@@ -12,6 +12,21 @@
     
     
     <item>
+      <title>Gin之中间件及其通信</title>
+      <link>https://billsjc.github.io/blog/posts/gin-context/</link>
+      <pubDate>Tue, 28 May 2019 10:31:17 +0800</pubDate>
+      
+      <guid>https://billsjc.github.io/blog/posts/gin-context/</guid>
+      <description>Gin之中间件及其通信 事实上gin的事务处理就是由中间件构成的，每一个func(c *gin.Cintext){}就是一个事物中间件，除此以外gin.Default()还使用了默认的recovery和logger中间件来维持一个web服务最基本的服务保障
+除此之外，用户也可以自定义全局中间件来完成一些特定的任务
+构造并使用一个全局中间件 在Gin中构建一个中间是十分方便的，比如我们想要一个中间件来输出cors头，使得前端请求可以跨域，那么只需要
+//定义中间件 func corsMiddleware(c *gin.Context){ c.Header(&amp;#34;Access-Control-Allow-Origin&amp;#34;, &amp;#34;*&amp;#34;) c.Header(&amp;#34;Access-Control-Allow-Headers&amp;#34;, &amp;#34;Authorization,Content-type,User-Agent&amp;#34;) c.Header(&amp;#34;Access-Control-Allow-Methods&amp;#34;, &amp;#34;POST, GET, OPTIONS, PUT, DELETE, HEAD&amp;#34;) } func main(){ r := gin.Default() //套用中间件  r.Use(corsMiddleware) //你剩下的业务逻辑  r.GET(...) } 在r.Use注册了一个中间件之后，所有路由都会执行这个输出cors头的操作
+局部中间件 Gin的路由设计使得中间件可以被插入到任何地方，除了全局中间件之外，可以对任意一个路由组(及其所有下级)或者任意单个路由配置多个中间件，并且只需要将函数参数传入路由注册方法后面的可变参数列表即可
+以下是一些常用的中间件嵌入方式
+func authMiddleware(c *gin.Context){ //...一些认证逻辑 } func corsMiddleware(c *gin.Context){ //上文中的cors中间件 } func loginPrecheck(c *gin.Context){ //检查是否输入用户名  if c.Query(&amp;#34;username&amp;#34;) == &amp;#34;&amp;#34;{ c.JSON(200,&amp;amp;gin.H{ &amp;#34;error&amp;#34;:400, &amp;#34;code&amp;#34;:&amp;#34;bad request&amp;#34;, }) } } //删除用户的预检中间件 func canUserDeleteAccount(c *gin.Context){ if !</description>
+    </item>
+    
+    <item>
       <title>gin 输入输出处理</title>
       <link>https://billsjc.github.io/blog/posts/gin-io/</link>
       <pubDate>Tue, 28 May 2019 10:31:17 +0800</pubDate>
